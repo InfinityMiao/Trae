@@ -106,14 +106,10 @@ id: 主键
 title: 考试标题
 description: 考试描述
 regulation_id: 关联制度ID
-duration: 考试时长（分钟）
 pass_score: 及格分数
 total_score: 总分
 department_ids: 可见部门ID列表（JSON）
 position_ids: 可见岗位ID列表（JSON）
-start_time: 开始时间
-end_time: 结束时间
-status: 状态（draft/ published/ ended）
 created_by: 创建人ID
 created_at: 创建时间
 updated_at: 更新时间
@@ -138,7 +134,6 @@ updated_at: 更新时间
 id: 主键
 user_id: 用户ID（外键）
 exam_id: 考试ID（外键）
-start_time: 开始时间
 submit_time: 提交时间
 score: 得分
 is_passed: 是否及格
@@ -179,7 +174,6 @@ updated_at: 更新时间
 3. **在线考试模块**
    - 考试列表展示（按权限过滤）
    - 参加考试
-   - 考试计时
    - 自动评分
    - 考试结果查看
    - 历史考试记录
@@ -219,9 +213,7 @@ updated_at: 更新时间
    - 创建/编辑/删除考试
    - 试题管理（添加/编辑/删除试题）
    - 权限设置（可见部门/岗位）
-   - 发布/结束考试
    - 查看考试成绩统计
-   - 导出考试记录
 
 6. **问题反馈管理模块**
    - 反馈列表
