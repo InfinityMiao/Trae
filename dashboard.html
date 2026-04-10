@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>工业卷烟打码数据看板</title>
+    
+    <!-- 网站图标 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    
+    <!-- 本地字体样式表 -->
+    <link rel="stylesheet" href="/static/fonts/fonts.css">
+    
+    <style>
+        /* 导入本地字体 */
+        @import url('/static/fonts/fonts.css');
+        
+        /* ==================== CSS 变量定义 ==================== */
+        /* 使用 CSS 变量统一管理颜色主题，方便维护和修改 */
+        :root {
+            /* 背景色 */
+            --bg-primary: #0a0e14;      /* 主背景色 - 深色 */
+            --bg-secondary: #111820;    /* 次级背景色 */
+            --bg-card: #161d27;         /* 卡片背景色 */
+            
+            /* 边框色 */
+            --border-color: #1e2a38;
+            
+            /* 文字颜色 */
+            --text-primary: #e6edf3;    /* 主要文字颜色 */
+            --text-secondary: #8b949e;  /* 次要文字颜色 */
+            --text-muted: #484f58;      /* 弱化文字颜色 */
+            
+            /* 强调色 - 青色系 */
+            --accent-cyan: #00d4aa;              /* 青色 */
+            --accent-cyan-dim: rgba(0, 212, 170, 0.15);  /* 青色半透明背景 */
+            
+            /* 强调色 - 橙色系 */
+            --accent-orange: #ff7b54;            /* 橙色 */
+            --accent-orange-dim: rgba(255, 123, 84, 0.15);
+            
+            /* 强调色 - 蓝色系 */
+            --accent-blue: #58a6ff;              /* 蓝色 */
+            --accent-blue-dim: rgba(88, 166, 255, 0.15);
+            
+            /* 强调色 - 紫色系 */
+            --accent-purple: #bc8cff;            /* 紫色 */
+            --accent-purple-dim: rgba(188, 140, 255, 0.15);
+            
+            /* 强调色 - 绿色系 */
+            --accent-green: #3fb950;             /* 绿色 */
+            --accent-green-dim: rgba(63, 185, 80, 0.15);
+            
+            /* 发光效果 */
+            --glow-cyan: 0 0 40px rgba(0, 212, 170, 0.3);
+            --glow-orange: 0 0 40px rgba(255, 123, 84, 0.3);
+        }
+
+        /* ==================== 全局样式重置 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ==================== 页面主体样式 ==================== */
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #0a0e14;
+            color: #e6edf3;
+            min-height: 1000px;
+            overflow-x: hidden;
+        }
+
+        /* ==================== 背景装饰效果 ==================== */
+        
+        /* 网格背景 */
+        .background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 212, 170, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 170, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 发光背景装饰 */
+        .background-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 右上角青色发光 */
+        .glow-1 {
+            top: -200px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(0, 212, 170, 0.3), transparent 70%);
+        }
+
+        /* 左下角橙色发光 */
+        .glow-2 {
+            bottom: -200px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(255, 123, 84, 0.2), transparent 70%);
+        }
+
+        /* ==================== 主容器样式 ==================== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* ==================== 页面头部样式 ==================== */
+        .header {
+            margin-bottom: 30px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        /* 头部滑入动画 */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 头部顶部区域 */
+        .header-top {
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        /* 头部左侧区域 */
+        .header-left {
+            float: left;
+        }
+        
+        .header-left > * {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 15px;
+        }
+
+        /* 状态指示器 - 脉冲动画圆点 */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #00d4aa;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        /* 脉冲动画 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        /* 头部标题样式 */
+        .header-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00d4aa;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* 头部元数据区域 */
+        .header-meta {
+            overflow: hidden;
+            margin-left: 25px;
+            font-size: 14px;
+            color: #484f58;
+            font-family: monospace;
+        }
+        
+        .header-meta span {
+            display: inline-block;
+            margin-right: 25px;
+            vertical-align: middle;
+        }
+
+        /* 计划周期样式 */
+        #planPeriod {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        /* 更新时间样式 */
+        #updateTime {
+            font-size: 18px;
+            font-weight: bold;
+            color: #8b949e;
+        }
+
+        /* 页面主标题 */
+        .header h1 {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: -1px;
+            color: #e6edf3;
+        }
+
+        /* ==================== 计划完成率卡片样式 ==================== */
+        .completion-rate {
+            background: #161d27;
+            border: 1px solid #1e2a38;
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin: 0 auto 30px auto;
+            width: calc(100% - 30px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 卡片顶部渐变装饰线 */
+        .completion-rate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #00d4aa;
+        }
+
+        /* 卡片滑入动画 */
+        @keyframes cardSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 圆形进度条容器 */
+        .rate-circle {
+            position: relative;
+            height: 140px;
+        }
+
+        .rate-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        /* 圆形进度条背景 */
+        .rate-circle .bg {
+            fill: none;
+            stroke: #111820;
+            stroke-width: 10;
+        }
+
+        /* 圆形进度条进度 */
+        .rate-circle .progress {
+            fill: none;
+            stroke: #00d4aa;
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+        }
+
+        /* 圆形进度条中心数值 */
+        .rate-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .rate-number {
+            font-family: monospace;
+            font-size: 36px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .rate-percent {
+            font-size: 18px;
+            color: #484f58;
+        }
+
+        /* 完成率信息区域 */
+        .rate-info {
+            display: table-cell;
+            vertical-align: middle;
+            width: 100%;
+            text-align: center;
+        }
+
+        .rate-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e6edf3;
+            margin-bottom: 8px;
+        }
+
+        .rate-subtitle {
+            font-size: 13px;
+            color: #484f58;
+            margin-bottom: 20px;
+        }
+
+        /* 完成率详情 */
+        .rate-details {
+            text-align: center;
+        }
+        
+        .rate-detail-item {
+            display: inline-block;
+            margin-right: 40px;
+        }
+
+        .rate-detail-label {
+            font-size: 12px;
+            color: #484f58;
+        }
+
+        .rate-detail-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+
+        .rate-detail-value.highlight {
+            color: #00d4aa;
+        }
+
+        .rate-detail-unit {
+            font-size: 12px;
+            color: #484f58;
+            font-weight: 400;
+        }
+
+        /* ==================== 主内容区域布局 ==================== */
+        .main-content {
+            display: table;
+            width: 100%;
+            border-spacing: 30px 0;
+        }
+        
+        .main-content .section {
+            display: table-cell;
+            width: 48%;
+            vertical-align: top;
+        }
+
+        /* ==================== 数据区块样式 ==================== */
+        .section {
+            background: #161d27;
+            border: 1px solid #1e2a38;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        /* 区块头部 */
+        .section-header {
+            overflow: hidden;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e2a38;
+        }
+        
+        .section-icon {
+            float: left;
+            margin-right: 12px;
+        }
+        
+        .section-title-wrapper {
+            overflow: hidden;
+        }
+
+        /* 区块图标 */
+        .section-icon {
+            float: left;
+            width: 44px;
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            border-radius: 12px;
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .section-icon.orange {
+            background: rgba(255, 123, 84, 0.15);
+            color: #ff7b54;
+            border: 1px solid rgba(255, 123, 84, 0.3);
+        }
+
+        .section-icon.cyan {
+            background: rgba(0, 212, 170, 0.15);
+            color: #00d4aa;
+            border: 1px solid rgba(0, 212, 170, 0.3);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: #484f58;
+            margin-top: 2px;
+        }
+
+        /* ==================== 数据列表样式 ==================== */
+        .data-list {
+            overflow: hidden;
+        }
+        
+        .data-list .data-row {
+            margin-bottom: 15px;
+        }
+
+        /* 数据网格布局 */
+        .data-grid {
+            overflow: hidden;
+        }
+
+        .data-row {
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .data-row .data-item {
+            float: left;
+            width: calc(50% - 7.5px);
+            margin-right: 15px;
+        }
+
+        .data-row .data-item:nth-child(2) {
+            margin-right: 0;
+        }
+
+        /* 数据项 */
+        .data-item {
+            overflow: hidden;
+            padding: 15px 20px;
+            background: #111820;
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+        
+        .data-item-info {
+            float: left;
+        }
+        
+        .data-item-value {
+            float: right;
+        }
+
+        /* 数据项悬停效果 */
+        .data-item:hover {
+            border-color: #1e2a38;
+        }
+
+        /* 数据项信息区域 */
+        .data-item-info {
+            overflow: hidden;
+        }
+        
+        .data-item-icon {
+            float: left;
+            margin-right: 12px;
+        }
+        
+        .data-item-label {
+            float: left;
+        }
+
+        /* 数据项图标 */
+        .data-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 36px;
+            font-size: 16px;
+        }
+
+        .data-item-icon.orange { background: rgba(255, 123, 84, 0.15); }
+        .data-item-icon.cyan { background: rgba(0, 212, 170, 0.15); }
+        .data-item-icon.blue { background: var(--accent-blue-dim); }
+        .data-item-icon.purple { background: var(--accent-purple-dim); }
+
+        .data-item-label {
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        /* 数据项数值 */
+        .data-item-value {
+            text-align: right;
+        }
+        
+        .data-item-number {
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .data-item-number {
+            font-family: monospace;
+            font-size: 28px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+
+        /* 数据项数值高亮颜色 */
+        .data-item-number.highlight-orange { color: #ff7b54; }
+        .data-item-number.highlight-cyan { color: #00d4aa; }
+        .data-item-number.highlight-blue { color: #58a6ff; }
+        .data-item-number.highlight-purple { color: #bc8cff; }
+
+        .data-item-unit {
+            font-size: 12px;
+            color: #484f58;
+        }
+
+        /* 数据项进度条 */
+        .data-item-progress {
+            width: 100%;
+            height: 3px;
+            background: #0a0e14;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .data-item-progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease-out;
+        }
+
+        .data-item-progress-fill.orange { background: #ff7b54; }
+        .data-item-progress-fill.cyan { background: #00d4aa; }
+        .data-item-progress-fill.blue { background: #58a6ff; }
+        .data-item-progress-fill.purple { background: #bc8cff; }
+
+        /* ==================== 确认打码量统计样式 ==================== */
+        .print-stats {
+            padding: 0;
+        }
+
+        .print-stats-main {
+            overflow: hidden;
+        }
+        
+        .print-stats-main > * {
+            margin-bottom: 15px;
+        }
+
+        /* 打码量总计区域 */
+        .print-stats-total {
+            overflow: hidden;
+            padding: 15px 20px;
+            background: #161d27;
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 12px;
+        }
+
+        .print-stats-total-icon {
+            float: left;
+            font-size: 32px;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            text-align: center;
+            background: rgba(0, 212, 170, 0.15);
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+
+        .print-stats-total-content {
+            overflow: hidden;
+        }
+
+        .print-stats-total-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e6edf3;
+            margin-bottom: 4px;
+        }
+
+        .print-stats-total-value {
+            font-family: monospace;
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .print-stats-total-unit {
+            font-size: 12px;
+            font-weight: normal;
+            color: #484f58;
+            margin-left: 6px;
+        }
+
+        /* 打码量分类统计 */
+        .print-stats-breakdown {
+            overflow: hidden;
+        }
+        
+        .print-stats-breakdown .print-stats-item {
+            margin-bottom: 15px;
+            clear: both;
+        }
+
+        .print-stats-item {
+            overflow: hidden;
+            background: #111820;
+            border-radius: 12px;
+            padding: 15px 20px;
+            border: 1px solid #1e2a38;
+        }
+
+        .print-stats-item:hover {
+            border-color: #00d4aa;
+        }
+
+        /* 打码量统计项头部 */
+        .print-stats-item-header {
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .print-stats-item-header > div:first-child {
+            float: left;
+        }
+        
+        .print-stats-item-icon {
+            float: left;
+            margin-right: 12px;
+        }
+        
+        .print-stats-item-label {
+            float: left;
+        }
+        
+        .print-stats-item-percent {
+            float: right;
+        }
+
+        .print-stats-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 36px;
+            font-size: 16px;
+        }
+
+        .print-stats-item-icon.blue { 
+            background: rgba(88, 166, 255, 0.15); 
+        }
+
+        .print-stats-item-icon.purple { 
+            background: rgba(188, 140, 255, 0.15); 
+        }
+
+        .print-stats-item-info {
+            overflow: hidden;
+        }
+        
+        .print-stats-item-info > * {
+            margin-bottom: 2px;
+        }
+
+        .print-stats-item-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+
+        /* 打码量百分比 */
+        .print-stats-item-percent {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00d4aa;
+            font-family: monospace;
+            margin-left: auto;
+        }
+
+        /* 打码量进度条 */
+        .print-stats-item-bar {
+            height: 3px;
+            background: #0a0e14;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .print-stats-item-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .print-stats-item-fill.blue { 
+            background: #58a6ff;
+        }
+
+        .print-stats-item-fill.purple { 
+            background: #bc8cff;
+        }
+
+        /* 打码量数值 */
+        .print-stats-item-value {
+            font-family: monospace;
+            font-size: 28px;
+            font-weight: bold;
+            color: #e6edf3;
+            text-align: right;
+        }
+
+        /* 组合条形图 */
+        .print-stats-item-bar.combined {
+            height: 20px;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .print-stats-item-bar.combined .print-stats-item-fill {
+            height: 100%;
+            float: left;
+            position: relative;
+        }
+
+        .print-stats-item-bar.combined .print-stats-item-fill:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .print-stats-item-bar.combined .print-stats-item-fill:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* 条形图标签 */
+        .bar-label {
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: bold;
+            color: #e6edf3;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            padding: 0 8px;
+        }
+
+        /* 详情项 */
+        .print-stats-item-details {
+            overflow: hidden;
+        }
+        
+        .print-stats-item-details > * {
+            margin-bottom: 8px;
+        }
+
+        .detail-item {
+            overflow: hidden;
+        }
+        
+        .detail-label {
+            float: left;
+        }
+        
+        .detail-value {
+            float: right;
+        }
+        
+        .detail-percent {
+            float: right;
+            margin-right: 80px;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        .detail-value {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+
+        .detail-percent {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        /* ==================== 加载动画样式 ==================== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0e14;
+            text-align: center;
+            z-index: 100;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* 加载旋转动画 */
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #1e2a38;
+            border-top-color: #00d4aa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8b949e;
+            letter-spacing: 2px;
+        }
+
+        /* ==================== 错误提示样式 ==================== */
+        .error-message {
+            background: rgba(255, 123, 84, 0.1);
+            border: 1px solid rgba(255, 123, 84, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            color: #ff7b54;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* ==================== 响应式布局 ==================== */
+        
+        /* 中等屏幕（平板） */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;  /* 单列布局 */
+            }
+            
+            .completion-rate {
+                                text-align: center;
+            }
+            
+            .rate-main {
+                            }
+            
+            .rate-details {
+                            }
+        }
+
+        /* 小屏幕（手机） */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header-top {
+                                                            }
+
+            .header-meta {
+                                            }
+
+            .rate-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .rate-number {
+                font-size: 28px;
+            }
+
+            .data-item-number {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== 背景装饰元素 ==================== -->
+    <div class="background-grid"></div>
+    <div class="background-glow glow-1"></div>
+    <div class="background-glow glow-2"></div>
+
+    <!-- ==================== 加载动画遮罩层 ==================== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+        <div class="loading-text">数据加载中...</div>
+    </div>
+
+    <!-- ==================== 主容器 ==================== -->
+    <div class="container">
+        <!-- 页面头部 -->
+        <header class="header">
+            <div class="header-top">
+                <div class="header-left">
+                    <div class="status-indicator"></div>
+                    <span class="header-title">实时数据监控</span>
+                </div>
+                <div class="header-meta">
+                    <span>计划周期: <span id="planPeriod">--</span></span>
+                    <span>更新时间: <span id="updateTime">--</span></span>
+                </div>
+            </div>
+            <h1>工业卷烟打码数据看板</h1>
+        </header>
+
+        <!-- ==================== 计划完成率卡片 ==================== -->
+        <div class="completion-rate">
+            <!-- SVG 渐变定义（用于圆形进度条） -->
+            <svg width="0" height="0">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#00d4aa" />
+                        <stop offset="100%" style="stop-color:#3fb950" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            
+            <!-- 完成率主要区域 -->
+            <div style="display: table; width: auto; margin: 0 auto;">
+                <div style="display: table-row;">
+                    <!-- 圆形进度条和信息 -->
+                    <div style="display: table-cell; vertical-align: middle; padding-right: 30px; text-align: center;">
+                        <div class="rate-circle-container">
+                            <div class="rate-circle">
+                                <svg width="140" height="140" viewBox="0 0 140 140">
+                                    <circle class="bg" cx="70" cy="70" r="60"></circle>
+                                    <circle class="progress" id="rateProgress" cx="70" cy="70" r="60"></circle>
+                                </svg>
+                                <div class="rate-value">
+                                    <div class="rate-number" id="completionRate">--</div>
+                                    <div class="rate-percent">%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 完成率信息 -->
+                    <div style="display: table-cell; vertical-align: middle; text-align: center;">
+                        <div class="rate-info">
+                            <div class="rate-title">计划完成率</div>
+                            <div class="rate-subtitle">打码量 / 计划量</div>
+                            <div class="rate-details">
+                                <div class="rate-detail-item">
+                                    <span class="rate-detail-label">打码量</span>
+                                    <span class="rate-detail-value highlight" id="ratePrintnum">--<span class="rate-detail-unit"> 件</span></span>
+                                </div>
+                                <div class="rate-detail-item">
+                                    <span class="rate-detail-label">计划量</span>
+                                    <span class="rate-detail-value" id="ratePlannum">--<span class="rate-detail-unit"> 件</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 主内容区域 ==================== -->
+        <div class="main-content">
+            <!-- 左侧：计划信息区块 -->
+            <section class="section">
+                <div class="section-header">
+                    <div class="section-icon orange">📋</div>
+                    <div>
+                        <div class="section-title">计划信息</div>
+                        <div class="section-subtitle">Plan Information</div>
+                    </div>
+                </div>
+                
+                <!-- 计划信息数据网格 -->
+                <div class="data-grid">
+                    <!-- 第一排：计划总量与计划剩余量 -->
+                    <div class="data-row">
+                        <!-- 计划总量 -->
+                        <div class="data-item">
+                            <div class="data-item-info">
+                                <div class="data-item-icon orange">📈</div>
+                                <span class="data-item-label">计划总量</span>
+                            </div>
+                            <div>
+                                <div class="data-item-value">
+                                    <span class="data-item-number highlight-orange" id="planTotal">--</span>
+                                    <span class="data-item-unit">件</span>
+                                </div>
+                                <div class="data-item-progress">
+                                    <div class="data-item-progress-fill orange" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 计划剩余量 -->
+                        <div class="data-item">
+                            <div class="data-item-info">
+                                <div class="data-item-icon orange">⏳</div>
+                                <span class="data-item-label">计划剩余量</span>
+                            </div>
+                            <div>
+                                <div class="data-item-value">
+                                    <span class="data-item-number" id="planResidue">--</span>
+                                    <span class="data-item-unit">件</span>
+                                </div>
+                                <div class="data-item-progress">
+                                    <div class="data-item-progress-fill orange" id="residueProgress" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 第二排：自有品牌计划总量与自有品牌计划剩余量 -->
+                    <div class="data-row">
+                        <!-- 自有品牌计划总量 -->
+                        <div class="data-item">
+                            <div class="data-item-info">
+                                <div class="data-item-icon blue">🏭</div>
+                                <span class="data-item-label">自有品牌计划总量</span>
+                            </div>
+                            <div>
+                                <div class="data-item-value">
+                                    <span class="data-item-number highlight-blue" id="selfPlanTotal">--</span>
+                                    <span class="data-item-unit">件</span>
+                                </div>
+                                <div class="data-item-progress">
+                                    <div class="data-item-progress-fill blue" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 自有品牌计划剩余量 -->
+                        <div class="data-item">
+                            <div class="data-item-info">
+                                <div class="data-item-icon blue">⏳</div>
+                                <span class="data-item-label">自有品牌计划剩余量</span>
+                            </div>
+                            <div>
+                                <div class="data-item-value">
+                                    <span class="data-item-number" id="selfPlanResidue">--</span>
+                                    <span class="data-item-unit">件</span>
+                                </div>
+                                <div class="data-item-progress">
+                                    <div class="data-item-progress-fill blue" id="selfResidueProgress" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 第三排：合作生产计划总量与合作生产计划剩余量 -->
+                    <div class="data-row">
+                        <!-- 合作生产计划总量 -->
+                        <div class="data-item">
+                            <div class="data-item-info">
+                                <div class="data-item-icon purple">🤝</div>
+                                <span class="data-item-label">合作生产计划总量</span>
+                            </div>
+                            <div>
+                                <div class="data-item-value">
+                                    <span class="data-item-number highlight-purple" id="diPlanTotal">--</span>
+                                    <span class="data-item-unit">件</span>
+                                </div>
+                                <div class="data-item-progress">
+                                    <div class="data-item-progress-fill purple" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 合作生产计划剩余量 -->
+                        <div class="data-item">
+                            <div class="data-item-info">
+                                <div class="data-item-icon purple">⏳</div>
+                                <span class="data-item-label">合作生产计划剩余量</span>
+                            </div>
+                            <div>
+                                <div class="data-item-value">
+                                    <span class="data-item-number" id="diPlanResidue">--</span>
+                                    <span class="data-item-unit">件</span>
+                                </div>
+                                <div class="data-item-progress">
+                                    <div class="data-item-progress-fill purple" id="diResidueProgress" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右侧：确认打码量信息区块 -->
+            <section class="section">
+                <div class="section-header">
+                    <div class="section-icon cyan">📊</div>
+                    <div>
+                        <div class="section-title">确认打码量信息</div>
+                        <div class="section-subtitle">Confirmation Printing Quantity</div>
+                    </div>
+                </div>
+                
+                <!-- 确认打码量统计 -->
+                <div class="print-stats">
+                    <div class="print-stats-main">
+                        <!-- 打码量总计 -->
+                        <div class="print-stats-total">
+                            <div class="print-stats-total-icon">📦</div>
+                            <div class="print-stats-total-content">
+                                <div class="print-stats-total-label">确认打码量</div>
+                                <div class="print-stats-total-value">
+                                    <span id="confirmedTotal1">--</span>
+                                    <span class="print-stats-total-unit">件</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 打码量分类统计 -->
+                        <div class="print-stats-breakdown">
+                            <div class="print-stats-item">
+                                <div class="print-stats-item-header">
+                                    <div class="print-stats-item-icon cyan">📊</div>
+                                    <div class="print-stats-item-info">
+                                        <span class="print-stats-item-label">打码量分布</span>
+                                    </div>
+                                </div>
+                                <div class="print-stats-item-bar combined">
+                                    <div class="print-stats-item-fill blue" id="selfProgress1" style="width: 0%;">
+                                        <span class="bar-label" id="selfBarLabel">--</span>
+                                    </div>
+                                    <div class="print-stats-item-fill purple" id="diProgress1" style="width: 0%;">
+                                        <span class="bar-label" id="diBarLabel">--</span>
+                                    </div>
+                                </div>
+                                <div class="print-stats-item-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">自有品牌</span>
+                                        <span class="detail-value"><span id="selfConfirmed1">--</span> 件</span>
+                                        <span class="detail-percent" id="selfPercent">--%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">合作生产</span>
+                                        <span class="detail-value"><span id="diConfirmed1">--</span> 件</span>
+                                        <span class="detail-percent" id="diPercent">--%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        var FLASK_API = '/api/data';
+
+        function fetchData() {
+            try {
+                var xhr = null;
+                if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                } else if (window.ActiveXObject) {
+                    xhr = new ActiveXObject('Microsoft.XMLHTTP');
+                }
+                
+                if (!xhr) {
+                    showError('浏览器不支持 AJAX');
+                    return;
+                }
+                
+                xhr.open('GET', FLASK_API + '?t=' + new Date().getTime(), true);
+                xhr.setRequestHeader('Cache-Control', 'no-cache');
+                xhr.setRequestHeader('Pragma', 'no-cache');
+                xhr.setRequestHeader('Expires', '-1');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            try {
+                                var response = JSON.parse(xhr.responseText);
+                                if (response.code === '200' && response.data) {
+                                    displayData(response.data, response.last_update);
+                                } else {
+                                    showError('数据未就绪，请稍后刷新...');
+                                }
+                            } catch (e) {
+                                showError('解析数据失败: ' + e.message);
+                            }
+                        } else {
+                            showError('无法连接服务器，状态码: ' + xhr.status);
+                        }
+                    }
+                };
+                xhr.onerror = function() {
+                    showError('网络请求失败');
+                };
+                xhr.send();
+            } catch (e) {
+                showError('请求数据时发生错误: ' + e.message);
+            }
+        }
+
+        function displayData(data, serverUpdateTime) {
+            try {
+                var loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.className = loadingOverlay.className + ' hidden';
+                }
+
+                document.getElementById('planPeriod').innerHTML = data.planyear + '年' + data.timevalue + '月';
+                document.getElementById('updateTime').innerHTML = serverUpdateTime || data.selfUpdateTime || '--';
+
+                var printnum = data.printnum || 0;
+                var plannum = data.plannum || 1;
+                var completionRate = plannum > 0 ? ((printnum / plannum) * 100).toFixed(1) : 0;
+
+                document.getElementById('completionRate').innerHTML = completionRate;
+                var circle = document.getElementById('rateProgress');
+                if (circle) {
+                    var circumference = 2 * Math.PI * 60;
+                    var offset = circumference - (completionRate / 100) * circumference;
+                    circle.style.strokeDashoffset = offset;
+                }
+                document.getElementById('ratePrintnum').innerHTML = printnum;
+                document.getElementById('ratePlannum').innerHTML = plannum;
+
+                document.getElementById('planTotal').innerHTML = data.plannum || 0;
+                document.getElementById('planResidue').innerHTML = data.residuePlanNum || 0;
+                document.getElementById('selfPlanTotal').innerHTML = data.selfplannum || 0;
+                document.getElementById('selfPlanResidue').innerHTML = data.residueSelfPlanNum || 0;
+                document.getElementById('diPlanTotal').innerHTML = data.diplannum || 0;
+                document.getElementById('diPlanResidue').innerHTML = data.residueDisPlanNum || 0;
+
+                var residuePercent = ((data.residuePlanNum / (data.plannum || 1)) * 100).toFixed(1);
+                var selfResiduePercent = ((data.residueSelfPlanNum / (data.selfplannum || 1)) * 100).toFixed(1);
+                var diResiduePercent = ((data.residueDisPlanNum / (data.diplannum || 1)) * 100).toFixed(1);
+                
+                document.getElementById('residueProgress').style.width = residuePercent + '%';
+                document.getElementById('selfResidueProgress').style.width = selfResiduePercent + '%';
+                document.getElementById('diResidueProgress').style.width = diResiduePercent + '%';
+
+                document.getElementById('confirmedTotal1').innerHTML = data.printnum || 0;
+                document.getElementById('selfConfirmed1').innerHTML = data.selfprintnum || 0;
+                document.getElementById('diConfirmed1').innerHTML = data.diprintnum || 0;
+
+                var totalPrint = data.printnum || 1;
+                var selfPrintPercent = ((data.selfprintnum / totalPrint) * 100).toFixed(1);
+                var diPrintPercent = ((data.diprintnum / totalPrint) * 100).toFixed(1);
+                
+                document.getElementById('selfPercent').innerHTML = selfPrintPercent + '%';
+                document.getElementById('diPercent').innerHTML = diPrintPercent + '%';
+                
+                document.getElementById('selfProgress1').style.width = selfPrintPercent + '%';
+                document.getElementById('diProgress1').style.width = diPrintPercent + '%';
+                
+                document.getElementById('selfBarLabel').innerHTML = (data.selfprintnum || 0) + ' (' + selfPrintPercent + '%)';
+                document.getElementById('diBarLabel').innerHTML = (data.diprintnum || 0) + ' (' + diPrintPercent + '%)';
+            } catch (e) {
+                showError('显示数据失败: ' + e.message);
+            }
+        }
+
+        function showError(message) {
+            try {
+                var loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.className = loadingOverlay.className + ' hidden';
+                }
+                
+                var container = null;
+                if (document.querySelector) {
+                    container = document.querySelector('.container');
+                } else {
+                    var containers = document.getElementsByTagName('div');
+                    for (var i = 0; i < containers.length; i++) {
+                        if (containers[i].className && containers[i].className.indexOf('container') >= 0) {
+                            container = containers[i];
+                            break;
+                        }
+                    }
+                }
+                
+                if (container) {
+                    var errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.innerHTML = '⚠️ ' + message;
+                    container.insertBefore(errorDiv, container.firstChild.nextSibling);
+                }
+            } catch (e) {
+                alert('显示错误失败: ' + e.message);
+            }
+        }
+
+        var refreshTimer = null;
+        
+        function startAutoRefresh() {
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+            }
+            refreshTimer = setInterval(function() {
+                try {
+                    fetchData();
+                } catch (e) {
+                    console.log('自动刷新失败: ' + e.message);
+                }
+            }, 60000);
+        }
+        
+        function initPage() {
+            try {
+                fetchData();
+                startAutoRefresh();
+            } catch (e) {
+                showError('初始化页面失败: ' + e.message);
+            }
+        }
+        
+        if (window.addEventListener) {
+            window.addEventListener('load', initPage, false);
+        } else if (window.attachEvent) {
+            window.attachEvent('onload', initPage);
+        } else {
+            window.onload = initPage;
+        }
+    </script>
+</body>
+</html>
