@@ -1,0 +1,6 @@
+{
+  "envId": "cloud1-1gzxi55o7b005230",
+  "cloudrun": {
+    "name": "simple-website"
+  }
+}
