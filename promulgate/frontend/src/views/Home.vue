@@ -300,4 +300,45 @@ function handleLogout() {
   color: var(--color-text);
   line-height: 1.6;
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .page-desc {
+    font-size: 13px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .quick-card :deep(.el-card__body) {
+    padding: 16px;
+    gap: 12px;
+  }
+  .quick-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+  .quick-title {
+    font-size: 15px;
+  }
+  .announcement-item {
+    padding: 10px 12px;
+  }
+}
 </style>

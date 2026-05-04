@@ -331,4 +331,39 @@ function formatDate(d: string) {
   margin-top: 20px;
   justify-content: center;
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .page-desc {
+    font-size: 13px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .records-card :deep(.el-card__body) {
+    overflow-x: auto;
+  }
+  .records-section {
+    margin-top: 28px;
+  }
+  .section-title {
+    font-size: 18px;
+  }
+}
 </style>

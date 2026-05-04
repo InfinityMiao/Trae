@@ -714,7 +714,328 @@ When creating new components, always use these CSS variables instead of hardcode
 
 ***
 
-## 11. Pre-Delivery Checklist
+## 11. Responsive Design System
+
+> **Principle:** Mobile-First progressive enhancement. Base styles target 375px+ mobile viewports, then layer on tablet/desktop enhancements via `min-width` media queries. All frontend pages must provide a usable experience on mobile devices.
+
+### 11.1 Breakpoints
+
+| Breakpoint     | Width Range | Target Devices                  | Usage                                        |
+| -------------- | ----------- | ------------------------------- | -------------------------------------------- |
+| **Mobile**     | 0 - 767px   | 375px iPhone SE → 428px iPhone | Base styles, single-column layout            |
+| **Tablet**     | 768px+      | iPad mini → iPad Pro 11"        | Two-column layouts, side-by-side cards       |
+| **Desktop**    | 1024px+     | Laptops, desktops               | Multi-column grids, full-width tables        |
+| **Wide**       | 1440px+     | Large monitors                  | Max-width containers, comfortable readability |
+
+```css
+/* Primary breakpoints used across all frontend pages */
+@media (max-width: 767px) { /* Mobile overrides */ }
+@media (min-width: 768px) { /* Tablet & up enhancements */ }
+@media (min-width: 1024px) { /* Desktop enhancements */ }
+
+/* Element Plus responsive grid cols */
+:xs="24"   /* Mobile: full width */
+:sm="12"   /* ≥768px: half width */
+:md="8"    /* ≥992px: one-third width (3-col grid) */
+:lg="6"    /* ≥1200px: one-fourth width */
+```
+
+### 11.2 Global Container & Spacing
+
+```css
+/* Desktop default */
+.main-content {
+  padding: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Mobile: reduce padding */
+@media (max-width: 767px) {
+  .main-content {
+    padding: 16px;
+  }
+}
+```
+
+**Spacing Scale (responsive):**
+
+| Context          | Desktop  | Mobile    |
+| ---------------- | -------- | --------- |
+| Page content pad | `28px`   | `16px`    |
+| Section gap      | `24px`   | `16px`    |
+| Card body pad    | `20-32px`| `16-20px` |
+| Grid gutter      | `20-24px`| `12px`    |
+| Form item bottom | `22px`   | `16px`    |
+
+### 11.3 Typography Scaling
+
+```css
+.page-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .page-title { font-size: 20px; }
+  .detail-title { font-size: 20px; }
+  .exam-name { font-size: 16px; }
+  .question-text { font-size: 15px; }
+}
+```
+
+**Type scale by viewport:**
+
+| Level         | Desktop  | Mobile    |
+| ------------- | -------- | --------- |
+| Page Title    | `24px`   | `20px`    |
+| Section Title | `20px`   | `18px`    |
+| Card Title    | `16-18px`| `15-16px` |
+| Body Text     | `14-15px`| `14px`    |
+| Small/Meta    | `12-13px`| `12px`    |
+
+### 11.4 Navigation Header Responsive
+
+The sticky header appears on all 9 frontend pages. On mobile, the approach is:
+
+**Mobile (≤767px):**
+- Header padding reduced from `0 28px` to `0 16px`
+- Nav buttons show only icons (hide text labels)
+- Logo text font-size reduced to `16px`
+- Reduce gap between nav buttons from `4px` to `2px`
+- Divider and logout button remain visible
+
+```css
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  /* Hide button text, show only icon */
+  .nav-btn {
+    padding: 6px 8px;
+    font-size: 0;  /* hide text */
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  /* Keep logout text visible for clarity */
+  .nav-btn.logout-btn {
+    font-size: 0;
+  }
+}
+```
+
+**Even smaller screens (≤480px):**
+- Hide logo text entirely, show only icon
+- Reduce logo icon wrapper size to `32px`
+
+### 11.5 Table Handling
+
+Tables are the most common responsive challenge. **Use horizontal scroll wrapping**:
+
+```css
+.records-card :deep(.el-card__body),
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+```
+
+**Never** shrink all columns proportionally—it makes content unreadable. Instead:
+1. Wrap table container with `overflow-x: auto`
+2. Set minimum column widths for readability
+3. Consider hiding low-priority columns on very small screens when feasible
+
+### 11.6 Grid & Card Layouts
+
+**Card Grids (Exam List, Regulation Grid):**
+
+```html
+<!-- Desktop: 3 columns, Tablet: 2 columns, Mobile: 1 column -->
+<el-col :xs="24" :sm="12" :md="8" />
+```
+
+**Side-by-side layouts (Feedback, Regulation List):**
+
+```html
+<!-- Desktop: side-by-side, Mobile: stacked -->
+<el-col :xs="24" :lg="12" />
+```
+
+**Profile grid items:**
+
+```css
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 767px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+### 11.7 Form Responsive
+
+- **Labels**: On mobile, consider `label-width="80px"` or top-aligned labels
+- **Submit buttons**: Full width on mobile
+- **Select/Input**: Already full width with `style="width: 100%"`
+
+```css
+@media (max-width: 767px) {
+  .submit-btn { width: 100%; }
+  .cancel-btn { width: 100%; margin-left: 0 !important; margin-top: 8px; }
+}
+```
+
+### 11.8 Dialog/Modal Responsive
+
+```css
+@media (max-width: 767px) {
+  .custom-dialog :deep(.el-dialog) {
+    width: 92vw !important;
+    margin: 16px auto;
+  }
+  .custom-dialog :deep(.el-dialog__body) {
+    padding: 16px;
+  }
+  .custom-dialog :deep(.el-dialog__header) {
+    padding: 16px;
+  }
+}
+```
+
+### 11.9 Exam-Specific Responsive
+
+**Option Cards (ExamTake.vue):**
+
+On desktop, option cards use `flex: 1` in a row. On mobile, they should wrap:
+
+```css
+/* Desktop: row of 4 */
+.options-row .option-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Individual option card */
+.option-card {
+  flex: 1 1 calc(50% - 6px);  /* 2-column on mobile */
+  min-width: 160px;
+}
+
+@media (max-width: 480px) {
+  .option-card {
+    flex: 1 1 100%;  /* single-column on very small */
+  }
+}
+```
+
+**Result Card (ExamResult.vue):**
+- Score value font-size: `56px` → `44px` on mobile
+- Action buttons: stack vertically
+
+### 11.10 Touch Target Guidelines
+
+Per UX best practices, all interactive elements on mobile must meet minimum touch target sizes:
+
+| Element       | Minimum Size | Recommendation          |
+| ------------- | ------------ | ----------------------- |
+| Buttons       | `44px`       | Height, padding ≥ 12px  |
+| Menu items    | `44px`       | Height, with margin     |
+| Table actions | `32px`       | Icon buttons minimum    |
+| Pagination    | `32px`       | Element Plus defaults   |
+| Radio/Check   | `20px`       | Element Plus defaults   |
+
+### 11.11 Responsive Anti-Patterns
+
+- ❌ **Desktop-first `max-width` queries** — Use mobile-first `min-width`
+- ❌ **Fixed pixel widths** — Use `max-width`, `%`, or `vw` for containers
+- ❌ **`100vh` on mobile** — Browser chrome causes overflow; use `min-height: 100vh` + flex
+- ❌ **Wide tables without scroll** — Always wrap tables in `overflow-x: auto`
+- ❌ **Tiny touch targets on mobile** — Buttons must be ≥ 44px tall
+- ❌ **Horizontal scroll on mobile** — Test all pages at 375px width
+- ❌ **Missing `overflow-x: hidden` on root** — Prevent accidental horizontal overflow
+- ❌ **Hidden content behind fixed headers** — Account for sticky header height (64px)
+- ❌ **Dialog width > viewport** — Use `92vw` or responsive width
+- ❌ **Text truncation without ellipsis** — Always use `text-overflow: ellipsis; overflow: hidden; white-space: nowrap`
+
+### 11.12 Element Plus Col Responsive Reference
+
+| Breakpoint | Min Width | Col Attribute | Description |
+|-----------|-----------|---------------|-------------|
+| xs        | 0         | `:xs="24"`    | Always full width on all devices |
+| sm        | 768px     | `:sm="12"`    | Half width on tablets+ |
+| md        | 992px     | `:md="8"`     | One-third width on desktops |
+| lg        | 1200px    | `:lg="6"`     | One-fourth width on large |
+| xl        | 1920px    | `:xl="4"`     | One-sixth on extra-large |
+
+**Common patterns used across the platform:**
+
+```html
+<!-- Card grid: 1 col mobile, 2 tablet, 3 desktop -->
+<el-col :xs="24" :sm="12" :md="8" />
+
+<!-- Sidebar+Content: stacked on mobile, side-by-side on desktop -->
+<el-col :xs="24" :lg="6" />  <!-- sidebar/category -->
+<el-col :xs="24" :lg="18" /> <!-- content -->
+
+<!-- Centered form (Profile): full width mobile, centered desktop -->
+<el-col :xs="24" :sm="16" :offset="0" />  <!-- no offset on mobile -->
+
+<!-- Two-panel layout (Feedback): equal 50% desktop, stacked mobile -->
+<el-col :xs="24" :lg="12" />
+<el-col :xs="24" :lg="12" />
+```
+
+### 11.13 Common Responsive CSS Template
+
+Every frontend page's `<style scoped>` must include responsive overrides:
+
+```css
+/* ===== Mobile Responsive (≤767px) ===== */
+@media (max-width: 767px) {
+  .main-content {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .page-desc {
+    font-size: 13px;
+  }
+  /* Nav: icon-only mode */
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+}
+```
+
+---
+
+## 12. Pre-Delivery Checklist
 
 Before delivering any UI code, verify:
 
@@ -732,4 +1053,11 @@ Before delivering any UI code, verify:
 - [ ] Consistent border-radius using radius tokens
 - [ ] Page header pattern followed (title + desc + optional CTA)
 - [ ] Card hover effect uses translateY (not scale)
+- [ ] All frontend pages include `@media (max-width: 767px)` responsive block
+- [ ] Tables wrapped with `overflow-x: auto` for mobile scroll
+- [ ] Dialog widths use responsive values (auto/92vw on mobile)
+- [ ] Page content padding matches responsive spacing scale
+- [ ] Navigation header adapts to icon-only on mobile
+- [ ] Touch targets meet 44px minimum on mobile
+- [ ] No Element Plus `:offset` applied on mobile breakpoints (xs)
 

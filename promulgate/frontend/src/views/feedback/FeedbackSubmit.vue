@@ -497,4 +497,51 @@ function formatDate(d: string) {
   color: var(--color-text);
   line-height: 1.6;
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .page-desc {
+    font-size: 13px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .submit-btn {
+    width: 100%;
+  }
+  .cancel-btn {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+  .detail-dialog :deep(.el-dialog) {
+    width: 92vw !important;
+    margin: 16px auto;
+  }
+  .detail-dialog :deep(.el-dialog__body) {
+    padding: 16px;
+  }
+  .detail-dialog :deep(.el-dialog__header) {
+    padding: 16px;
+  }
+  .detail-title {
+    font-size: 16px;
+  }
+}
 </style>

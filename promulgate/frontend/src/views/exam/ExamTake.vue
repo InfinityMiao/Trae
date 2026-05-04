@@ -489,4 +489,63 @@ function handleLogout() {
 .submit-btn:hover {
   background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .exam-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .exam-name {
+    font-size: 16px;
+  }
+  .question-text {
+    font-size: 15px;
+    min-height: 120px;
+    padding: 0 8px;
+  }
+  .option-card {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 140px;
+    padding: 12px;
+  }
+  .option-group :deep(.el-radio-group),
+  .option-group :deep(.el-checkbox-group) {
+    gap: 8px;
+  }
+  .option-label {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  .option-text {
+    font-size: 13px;
+  }
+  .actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .action-btn {
+    min-width: 100px;
+    flex: 1;
+  }
+}
 </style>

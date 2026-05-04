@@ -268,4 +268,36 @@ async function handleChange() {
 .forgot-btn:hover {
   color: var(--color-primary);
 }
+
+@media (max-width: 767px) {
+  .login-card {
+    width: 90vw;
+    max-width: 400px;
+  }
+  .login-card :deep(.el-card__body) {
+    padding: 28px 20px;
+  }
+  .login-title {
+    font-size: 19px;
+  }
+  .login-subtitle {
+    font-size: 13px;
+  }
+  .login-icon-wrapper {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+  }
+  .login-header {
+    margin-bottom: 24px;
+  }
+  .login-btn {
+    height: 44px;
+    font-size: 14px;
+  }
+  :deep(.el-dialog) {
+    width: 92vw !important;
+    margin: 16px auto;
+  }
+}
 </style>

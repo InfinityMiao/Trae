@@ -529,4 +529,41 @@ function onTouchEnd() {
 .exam-btn {
   border-radius: var(--radius-sm);
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .detail-card :deep(.el-card__body) {
+    padding: 20px;
+  }
+  .detail-title {
+    font-size: 20px;
+  }
+  .detail-meta {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pdf-container {
+    max-height: 500px;
+  }
+  .exam-info {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
 </style>

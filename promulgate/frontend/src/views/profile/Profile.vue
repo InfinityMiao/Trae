@@ -37,7 +37,7 @@
       </div>
 
       <el-row :gutter="24">
-        <el-col :xs="24" :sm="16" :offset="4">
+        <el-col :xs="24" :sm="16" :sm-offset="4">
           <el-card class="profile-card" shadow="never">
             <template #header>
               <div class="section-header">
@@ -494,5 +494,44 @@ function formatDate(d: string) {
 .pagination {
   margin-top: 16px;
   justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .page-desc {
+    font-size: 13px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-item {
+    padding: 12px;
+    gap: 10px;
+  }
+  .submit-btn {
+    width: 100%;
+  }
+  .notif-item {
+    padding: 12px;
+  }
 }
 </style>

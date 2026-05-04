@@ -435,4 +435,48 @@ function formatDate(d: string) {
   margin-top: 20px;
   justify-content: center;
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .page-desc {
+    font-size: 13px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .list-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .search-input {
+    width: 100% !important;
+  }
+  .category-card {
+    margin-bottom: 16px;
+  }
+  .regulation-item {
+    padding: 12px;
+    gap: 10px;
+  }
+  .reg-title {
+    font-size: 14px;
+  }
+}
 </style>

@@ -230,4 +230,59 @@ function handleLogout() {
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+  .logo-text {
+    font-size: 16px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .nav-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
+  .nav-btn .el-icon {
+    font-size: 18px;
+    margin-right: 0;
+  }
+  .result-card {
+    margin-top: 16px;
+    padding: 0;
+  }
+  .result-card :deep(.el-card__body) {
+    padding: 32px 20px;
+  }
+  .result-icon-wrapper {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 16px;
+  }
+  .result-icon-wrapper .el-icon {
+    font-size: 40px !important;
+  }
+  .result-title {
+    font-size: 20px;
+  }
+  .result-subtitle {
+    margin-bottom: 24px;
+  }
+  .score-value {
+    font-size: 44px;
+  }
+  .score-display {
+    margin-bottom: 28px;
+  }
+  .actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .action-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
 </style>
